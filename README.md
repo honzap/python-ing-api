@@ -74,4 +74,4 @@ movement = api.movement('uuid')
 ```
 
 ## License
-The *python-ing-api* is free and open-source software under [MIT License](LICENSE).
+The *ING Bank Python Client* is free and open-source software under [MIT License](LICENSE).
