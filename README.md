@@ -1,6 +1,6 @@
-# python-ing-api
+# ING Bank Python Client
 
-Python interface for ING IB
+Python interface for ING Bank internet banking.
 
 Provided class enables very simple interface to read data from API 
 provided by ING Bank. This service is currently deployed in 
@@ -72,3 +72,6 @@ the detailed information the detail should be called.
 ```python
 movement = api.movement('uuid')
 ```
+
+## License
+The *python-ing-api* is free and open-source software under [MIT License](LICENSE).
