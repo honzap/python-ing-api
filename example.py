@@ -5,7 +5,7 @@ from ing_api import IngClient
 # set up cookie
 cookie = 'copied value of Cookie header from browser'
 
-api = IngClient(cookie)
+api = IngClient(IngClient.Country.CZ, cookie)
 
 # get information about the client
 client = api.client()

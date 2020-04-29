@@ -5,7 +5,8 @@ Python interface for ING Bank internet banking.
 Provided class enables very simple interface to read data from API 
 provided by ING Bank. This service is currently deployed in 
 [Czechia](https://ib.ing.cz/transactional-cz/) where the library 
-has been tested.
+has been tested. The same system seems deployed also in 
+[Spain](https://ing.ingdirect.es/app-login/) where it's originated.
 
 ## Usage
 
@@ -18,6 +19,7 @@ pip3 install -r requirements.txt
 ### Before Using
 Before using the library you should log in into the Internet Banking.
 - [Czechia](https://ib.ing.cz/transactional-cz/)
+- [Spain](https://ing.ingdirect.es/app-login/)
 
 When the login process is done and you're successfully logged in open 
 the developer console of the browser. You should there network requests 
@@ -35,7 +37,7 @@ from ing_api import IngClient
 
 # set up cookie
 cookie = 'copied value of Cookie header from browser'
-api = IngClient(cookie)
+api = IngClient(IngClient.Country.CZ, cookie)
 ```
 
 ### Get information about the client

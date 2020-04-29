@@ -15,10 +15,11 @@ import requests
 
 class IngClient:
     """
-    ING Client provides simple interface to connect to ING Bank API (currently deployed in CZ)
+    ING Client provides simple interface to connect to ING Bank API (currently deployed in CZ, ES)
 
-    Instantiate with: IngClient(cookie)
+    Instantiate with: IngClient(country, cookie)
 
+        country - name of the country (defined by `IngClient.Country`)
         cookie - Cookie header copied from web browser
 
     Usage::
@@ -26,7 +27,7 @@ class IngClient:
       >>> import datetime
       >>> from ing_api import IngClient
       >>> cookie = 'copied value of Cookie header from browser'
-      >>> api = IngClient(cookie)
+      >>> api = IngClient(IngClient.Country.CZ, cookie)
       >>> # get information about the client
       >>> client = api.client()
       >>> # get all products of the client
@@ -39,8 +40,19 @@ class IngClient:
       >>> movement = api.movement('uuid')
     """
 
-    _BASE_URL = 'https://ib.ing.cz/genoma_api/rest'
-    _REFERER = 'https://ib.ing.cz/transactional-cz/'
+    class Country:
+        CZ = 'CZ'
+        ES = 'ES'
+
+    _BASE_URLS = {
+        Country.CZ: 'https://ib.ing.cz/genoma_api/rest',
+        Country.ES: 'https://ing.ingdirect.es/genoma_api/rest'
+    }
+
+    _REFERERS = {
+        Country.CZ: 'https://ib.ing.cz/transactional-cz/',
+        Country.ES: 'https://ing.ingdirect.es/app-login/'
+    }
 
     _USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0'
 
@@ -49,7 +61,6 @@ class IngClient:
         'Accept': 'application/json, text/javascript, */*; q=0.01',
         'Accept-Language': 'en-US,en;q=0.5',
         'Accept-Encoding': 'gzip, deflate, br',
-        'Referer': _REFERER,
         'Content-Type': 'application/json; charset=utf-8',
         'X-Requested-With': 'XMLHttpRequest'
     }
@@ -62,7 +73,17 @@ class IngClient:
     _MOVEMENTS_PATH = _PRODUCT_PATH + '/movements'
     _MOVEMENT_PATH = '/movements/%s'
 
-    def __init__(self, cookie):
+    def __init__(self, country, cookie):
+        """ Initialize class
+
+        :param country: Name of the country
+        :type country: IngClient.Country
+        :param cookie: Value of Cookie header
+        :type cookie: str
+        :return: object `IngClient`
+        :rtype: IngClient
+        """
+        self._country = country
         self._cookie = cookie
         self._genoma_session_id = self._extract_genoma_session_id(cookie)
 
@@ -71,6 +92,7 @@ class IngClient:
         Get logged client information
 
         :return: JSON object with result
+        :rtype: dict
         """
         response = requests.get(self._url(self._CLIENT_PATH), headers=self._headers)
         return response.json()
@@ -79,6 +101,7 @@ class IngClient:
         r"""Get list of products
 
         :return: JSON object with result
+        :rtype: list
         """
         response = requests.get(self._url(self._PRODUCTS_PATH), headers=self._headers)
         return response.json()
@@ -97,6 +120,7 @@ class IngClient:
         :param offset: offset for pagination
         :type offset: int
         :return: JSON object with result
+        :rtype: dict
         """
         params = {
             'fromDate': from_date.strftime('%d/%m/%Y'),
@@ -113,12 +137,13 @@ class IngClient:
         :param movement_uuid: UUID of movement
         :type movement_uuid: str
         :return: JSON object with result
+        :rtype: dict
         """
         response = requests.get(self._url(self._MOVEMENT_PATH % movement_uuid), headers=self._headers)
         return response.json()
 
     def _url(self, path):
-        return '%s%s' % (self._BASE_URL, path)
+        return '%s%s' % (self._BASE_URLS[self._country], path)
 
     def _extract_genoma_session_id(self, cookie):
         return [el for el in cookie.split(';') if self._GENOMA_SESSION_NAME in el][0].split('=')[1]
@@ -126,6 +151,7 @@ class IngClient:
     @property
     def _headers(self):
         headers = self._HEADERS.copy()
+        headers['Referer'] = self._REFERERS[self._country]
         headers['Cookie'] = self._cookie
         headers[self._GENOMA_SESSION_NAME] = self._genoma_session_id
         return headers
