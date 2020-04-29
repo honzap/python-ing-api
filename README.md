@@ -22,11 +22,11 @@ Before using the library you should log in into the Internet Banking.
 - [Spain](https://ing.ingdirect.es/app-login/)
 
 When the login process is done and you're successfully logged in open 
-the developer console of the browser. You should there network requests 
-and take of of the requests going to bank API. It should contain the 
-`/rest` part in the path. Then, find `Request headers` and there 
-the `Cookie` header. Copy the whole value of the header and use it to
- set up the `IngClient`. 
+the developer console of the browser. You should see there network 
+requests and investigate the requests going to bank API. It should 
+contain the `/rest` part in the path. Then, find `Request headers` and 
+there the `Cookie` header. Copy the whole value of the header  
+and use it to set up the `IngClient`. 
  
 > Keep in mind that you should stay logged in when you would like to
  run the script. 
